@@ -1,0 +1,27 @@
+{
+  "name": "piton-gns-web-test",
+  "version": "1.0.0",
+  "description": "Playwright TypeScript automation study case for DemoQA and manual exploratory testing drafts.",
+  "scripts": {
+    "test": "playwright test",
+    "test:elements": "playwright test tests/elements",
+    "test:forms": "playwright test tests/forms",
+    "test:widgets": "playwright test tests/widgets",
+    "docs:generate": "node scripts/generate-docs.js",
+    "report": "playwright show-report"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "demoqa",
+    "test-automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.1",
+    "exceljs": "^4.4.0"
+  }
+}
