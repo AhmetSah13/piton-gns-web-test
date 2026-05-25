@@ -200,6 +200,12 @@ function styleStatusCells(worksheet, statusColumnKey) {
     if (value === 'passed') {
       cell.fill = passedFill();
       cell.font = { bold: true, color: { argb: 'FF006100' } };
+    } else if (value === 'open') {
+      cell.fill = openFill();
+      cell.font = { bold: true, color: { argb: 'FF9C0006' } };
+    } else if (value === 'not applicable') {
+      cell.fill = neutralFill();
+      cell.font = { bold: true, color: { argb: 'FF666666' } };
     } else if (value.includes('executed manually')) {
       cell.fill = pendingFill();
       cell.font = { bold: true, color: { argb: 'FF9C6500' } };
@@ -222,6 +228,14 @@ function passedFill() {
 
 function pendingFill() {
   return { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFEB9C' } };
+}
+
+function openFill() {
+  return { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC7CE' } };
+}
+
+function neutralFill() {
+  return { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE7E6E6' } };
 }
 
 function addTitle(worksheet, title, subtitle, columnCount) {
@@ -288,79 +302,232 @@ function addSummarySheet(workbook) {
   ];
   worksheet.addRows([
     {
-      section: 'Exploratory Testing Scope',
-      scope: 'https://www.gnsmetal.com/home',
-      status: 'To be executed manually',
-      notes: 'Capture usability, navigation, validation, visual, responsive, and performance observations.',
+      section: 'DemoQA automation',
+      scope: 'https://demoqa.com/',
+      status: 'Passed',
+      notes: '15 Playwright tests passed for Elements, Forms, and Widgets modules.',
     },
     {
-      section: 'Exploratory Testing Scope',
+      section: 'PITON manual test',
       scope: 'https://piton.com.tr/',
-      status: 'To be executed manually',
-      notes: 'Capture usability, navigation, validation, visual, responsive, and performance observations.',
+      status: 'Open',
+      notes: '2 low severity UI/responsive issues found. Navigation, footer, form validation, and Chrome/Edge visual checks passed.',
+    },
+    {
+      section: 'GNS Metal manual test',
+      scope: 'https://www.gnsmetal.com/home',
+      status: 'Passed',
+      notes: 'No critical issue observed in the tested scope. Contact form validation is Not Applicable because no standard user-fillable contact form was identified.',
+    },
+    {
+      section: 'Browsers checked',
+      scope: 'Chrome and Edge',
+      status: 'Passed',
+      notes: 'Cross-browser visual checks looked consistent for both PITON and GNS Metal in tested scope.',
+    },
+    {
+      section: 'Viewports checked',
+      scope: 'Desktop, mobile, Galaxy Z Fold 5 responsive view',
+      status: 'Open',
+      notes: 'PITON Galaxy Z Fold 5 responsive view has a low severity hero text clipping issue. Other checked responsive views were generally working correctly.',
     },
     {
       section: 'Evidence',
       scope: 'docs/screenshots/',
-      status: 'To be executed manually',
-      notes: 'Attach screenshots or video references for defects and notable observations.',
+      status: 'Passed',
+      notes: 'Evidence screenshots for open PITON issues are stored under docs/screenshots/.',
     },
   ]);
   styleWorksheet(worksheet);
   styleStatusCells(worksheet, 'status');
-  addTitle(worksheet, 'Exploratory Test Report Summary', 'Manual report template prepared for PITON study-case delivery.', 4);
+  addTitle(worksheet, 'Exploratory Test Report Summary', 'Manual exploratory observations updated from real execution results.', 4);
 }
 
 function addFindingsSheet(workbook, sheetName, website, bugPrefix) {
   const worksheet = workbook.addWorksheet(sheetName);
   worksheet.columns = findingsColumns;
-  worksheet.addRows([
-    {
-      bugId: `${bugPrefix}-001`,
-      website,
-      pageArea: 'Home page',
-      testType: 'UX and usability',
-      description: 'Placeholder for manual exploratory observation.',
-      steps: 'Open the website; review primary content, calls to action, and readability.',
-      expected: 'User can understand the page purpose and continue without confusion.',
-      actual: 'To be executed manually',
-      severity: 'TBD',
-      priority: 'TBD',
-      status: 'To be executed manually',
-      evidence: 'docs/screenshots/',
-    },
-    {
-      bugId: `${bugPrefix}-002`,
-      website,
-      pageArea: 'Navigation',
-      testType: 'Navigation flow',
-      description: 'Placeholder for broken or confusing navigation paths.',
-      steps: 'Use header, footer, and key internal links.',
-      expected: 'Navigation works consistently and leads to expected pages.',
-      actual: 'To be executed manually',
-      severity: 'TBD',
-      priority: 'TBD',
-      status: 'To be executed manually',
-      evidence: 'docs/screenshots/',
-    },
-    {
-      bugId: `${bugPrefix}-003`,
-      website,
-      pageArea: 'Forms / Contact areas',
-      testType: 'Form validation',
-      description: 'Placeholder for required field, invalid format, and submission validation findings.',
-      steps: 'Submit forms with empty and invalid values, then with valid values if available.',
-      expected: 'Validation messages are clear and invalid submissions are prevented.',
-      actual: 'To be executed manually',
-      severity: 'TBD',
-      priority: 'TBD',
-      status: 'To be executed manually',
-      evidence: 'docs/screenshots/',
-    },
-  ]);
+  worksheet.addRows(getFindingsRows(website, bugPrefix));
   styleWorksheet(worksheet);
   styleStatusCells(worksheet, 'status');
-  addTitle(worksheet, `${website} Findings`, 'Manual exploratory findings template.', findingsColumns.length);
+  addTitle(worksheet, `${website} Findings`, 'Manual exploratory findings from tested scope.', findingsColumns.length);
+}
+
+function getFindingsRows(website, bugPrefix) {
+  if (bugPrefix === 'PITON') {
+    return [
+      {
+        bugId: 'PITON-NAV-001',
+        website,
+        pageArea: 'Header menu',
+        testType: 'Navigation flow',
+        description: 'Header/menu navigation links checked.',
+        steps: 'Open PITON website and click header/menu navigation links.',
+        expected: 'Navigation links open the expected pages or sections.',
+        actual: 'Header/menu navigation links work correctly.',
+        severity: 'None',
+        priority: 'None',
+        status: 'Passed',
+        evidence: '',
+      },
+      {
+        bugId: 'PITON-FOOT-001',
+        website,
+        pageArea: 'Footer',
+        testType: 'Navigation flow',
+        description: 'Footer links checked.',
+        steps: 'Open PITON website and click footer links.',
+        expected: 'Footer links open the expected destinations.',
+        actual: 'Footer links work correctly.',
+        severity: 'None',
+        priority: 'None',
+        status: 'Passed',
+        evidence: '',
+      },
+      {
+        bugId: 'PITON-FORM-001',
+        website,
+        pageArea: 'Contact form',
+        testType: 'Form validation',
+        description: 'Empty submit validation checked.',
+        steps: 'Open contact form and submit without filling required fields.',
+        expected: 'Required field warnings are displayed and empty submission is prevented.',
+        actual: 'Contact form warns the user when required fields are empty.',
+        severity: 'None',
+        priority: 'None',
+        status: 'Passed',
+        evidence: '',
+      },
+      {
+        bugId: 'PITON-FORM-002',
+        website,
+        pageArea: 'Contact form email field',
+        testType: 'Form validation',
+        description: 'Invalid email validation checked.',
+        steps: 'Enter an invalid email value without @ and submit the contact form.',
+        expected: 'Email field displays a clear invalid email warning.',
+        actual: 'Email field warns the user that an @ character is required.',
+        severity: 'None',
+        priority: 'None',
+        status: 'Passed',
+        evidence: '',
+      },
+      {
+        bugId: 'PITON-COMPAT-001',
+        website,
+        pageArea: 'General visual layout',
+        testType: 'Browser compatibility',
+        description: 'Chrome and Edge compatibility checked.',
+        steps: 'Open PITON website in Chrome and Edge and compare main visual layout.',
+        expected: 'Visual layout is consistent across checked browsers.',
+        actual: 'Chrome and Edge visual checks look consistent.',
+        severity: 'None',
+        priority: 'None',
+        status: 'Passed',
+        evidence: '',
+      },
+      {
+        bugId: 'PITON-UI-001',
+        website,
+        pageArea: 'Contact form subject dropdown',
+        testType: 'Visual/UI consistency',
+        description: 'Contact form subject dropdown visual contrast/theme inconsistency.',
+        steps: 'Open the contact form and expand the Konu dropdown.',
+        expected: 'Dropdown option area follows the site dark theme and remains readable.',
+        actual: 'Dropdown option area appears as a large white/blank area, creating visual consistency and contrast problems.',
+        severity: 'Low',
+        priority: 'Medium',
+        status: 'Open',
+        evidence: 'docs/screenshots/piton-contact-subject-dropdown-contrast-issue.png',
+      },
+      {
+        bugId: 'PITON-RESP-001',
+        website,
+        pageArea: 'Homepage hero',
+        testType: 'Responsive behavior',
+        description: 'Homepage hero text clipping on Galaxy Z Fold 5 responsive view.',
+        steps: 'Open PITON homepage in Galaxy Z Fold 5 responsive viewport and inspect hero text.',
+        expected: 'Hero text should be fully visible without clipping.',
+        actual: 'A small part of the homepage hero text is clipped/not fully visible.',
+        severity: 'Low',
+        priority: 'Low',
+        status: 'Open',
+        evidence: 'docs/screenshots/piton-home-galaxy-z-fold-text-clipping.png',
+      },
+    ];
+  }
+
+  return [
+    {
+      bugId: `${bugPrefix}-NAV-001`,
+      website,
+      pageArea: 'Header menu',
+      testType: 'Navigation flow',
+      description: 'Header/menu navigation links checked.',
+      steps: 'Open GNS Metal website and click header/menu navigation links.',
+      expected: 'Navigation links open the expected pages or sections.',
+      actual: 'Header/menu navigation links work correctly.',
+      severity: 'None',
+      priority: 'None',
+      status: 'Passed',
+      evidence: '',
+    },
+    {
+      bugId: `${bugPrefix}-FOOT-001`,
+      website,
+      pageArea: 'Footer',
+      testType: 'Navigation flow',
+      description: 'Footer links checked.',
+      steps: 'Open GNS Metal website and click footer links.',
+      expected: 'Footer links open the expected destinations.',
+      actual: 'Footer links work correctly.',
+      severity: 'None',
+      priority: 'None',
+      status: 'Passed',
+      evidence: '',
+    },
+    {
+      bugId: `${bugPrefix}-RESP-001`,
+      website,
+      pageArea: 'Responsive layout',
+      testType: 'Responsive behavior',
+      description: 'Responsive layout checked.',
+      steps: 'Open the website in checked responsive viewports and inspect layout.',
+      expected: 'Layout adapts without major visual or usability issues.',
+      actual: 'Responsive layout was checked and no major visual issue was observed.',
+      severity: 'None',
+      priority: 'None',
+      status: 'Passed',
+      evidence: '',
+    },
+    {
+      bugId: `${bugPrefix}-COMPAT-001`,
+      website,
+      pageArea: 'General visual layout',
+      testType: 'Browser compatibility',
+      description: 'Chrome and Edge compatibility checked.',
+      steps: 'Open GNS Metal website in Chrome and Edge and compare main visual layout.',
+      expected: 'Visual layout is consistent across checked browsers.',
+      actual: 'Chrome and Edge visual checks look consistent.',
+      severity: 'None',
+      priority: 'None',
+      status: 'Passed',
+      evidence: '',
+    },
+    {
+      bugId: `${bugPrefix}-FORM-001`,
+      website,
+      pageArea: 'Contact form',
+      testType: 'Form validation',
+      description: 'Contact form validation testing.',
+      steps: 'Search tested scope for a standard user-fillable contact form.',
+      expected: 'If a user-fillable contact form exists, required field and invalid input validation can be tested.',
+      actual: 'Not Applicable because no standard user-fillable contact form was identified in the tested scope.',
+      severity: 'None',
+      priority: 'None',
+      status: 'Not Applicable',
+      evidence: '',
+    },
+  ];
 }
 
 function addBrowserCompatibilitySheet(workbook) {
@@ -374,14 +541,13 @@ function addBrowserCompatibilitySheet(workbook) {
     { header: 'Notes', key: 'notes', width: 45 },
   ];
   worksheet.addRows([
-    ['GNS Metal', 'Chrome', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
-    ['GNS Metal', 'Firefox', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
-    ['GNS Metal', 'Safari / WebKit', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
-    ['PITON', 'Chrome', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
-    ['PITON', 'Firefox', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
-    ['PITON', 'Safari / WebKit', 'TBD', 'Home and key navigation pages', 'To be executed manually', ''],
+    ['GNS Metal', 'Chrome', 'Manual check', 'Home and key navigation pages', 'Passed', 'Visual checks look consistent.'],
+    ['GNS Metal', 'Edge', 'Manual check', 'Home and key navigation pages', 'Passed', 'Visual checks look consistent.'],
+    ['PITON', 'Chrome', 'Manual check', 'Home and key navigation pages', 'Passed', 'Visual checks look consistent.'],
+    ['PITON', 'Edge', 'Manual check', 'Home and key navigation pages', 'Passed', 'Visual checks look consistent.'],
   ]);
   styleWorksheet(worksheet);
+  styleStatusCells(worksheet, 'result');
   addTitle(worksheet, 'Browser Compatibility', 'Manual cross-browser execution matrix.', 6);
 }
 
@@ -397,12 +563,11 @@ function addResponsiveChecksSheet(workbook) {
     { header: 'Notes / Evidence', key: 'notes', width: 40 },
   ];
   worksheet.addRows([
-    ['GNS Metal', 'Desktop', '1440x900', 'Header, hero, navigation, footer', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
-    ['GNS Metal', 'Tablet', '768x1024', 'Header, content layout, forms', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
-    ['GNS Metal', 'Mobile', '390x844', 'Menu, content stacking, forms', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
-    ['PITON', 'Desktop', '1440x900', 'Header, hero, navigation, footer', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
-    ['PITON', 'Tablet', '768x1024', 'Header, content layout, forms', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
-    ['PITON', 'Mobile', '390x844', 'Menu, content stacking, forms', 'To be executed manually', 'To be executed manually', 'docs/screenshots/'],
+    ['GNS Metal', 'Desktop', 'Manual check', 'Header, hero, navigation, footer', 'No major visual issue observed.', 'Passed', ''],
+    ['GNS Metal', 'Mobile', 'Manual check', 'Menu, content stacking, key pages', 'No major visual issue observed.', 'Passed', ''],
+    ['PITON', 'Desktop', 'Manual check', 'Header, hero, navigation, footer', 'Generally working correctly.', 'Passed', ''],
+    ['PITON', 'Mobile', 'Manual check', 'Menu, content stacking, contact form', 'Generally working correctly.', 'Passed', ''],
+    ['PITON', 'Galaxy Z Fold 5', 'Responsive viewport', 'Homepage hero', 'A small part of hero text is clipped/not fully visible.', 'Open', 'docs/screenshots/piton-home-galaxy-z-fold-text-clipping.png'],
   ]);
   styleWorksheet(worksheet);
   styleStatusCells(worksheet, 'status');

@@ -146,6 +146,12 @@ The workflow runs on pushes and pull requests to `main` or `master`, installs de
 - `docs/exploratory-test-report.xlsx` contains a structured manual exploratory report workbook with summary, findings, browser compatibility, and responsive checks sheets.
 - `docs/screenshots/` is reserved for exploratory testing evidence and defect screenshots.
 
-## Manual Exploratory Testing Notes
+## Manual Exploratory Test Results
 
-The exploratory report is intentionally left as a draft template. Actual results, screenshots, browser details, and defects should be filled in after manual exploratory sessions are executed on the GNS Metal and PITON websites.
+- DemoQA automation: 15 Playwright tests passed.
+- PITON manual test: 2 low severity UI/responsive issues found.
+- GNS Metal manual test: no critical issue observed in the tested scope.
+- Browsers checked: Chrome and Edge.
+- Viewports checked: desktop, mobile, and Galaxy Z Fold 5 responsive view.
+
+Evidence screenshots for the open PITON findings are stored under `docs/screenshots/`.
