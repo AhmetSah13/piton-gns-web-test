@@ -117,6 +117,12 @@ This command creates:
 - Screenshot evidence folder: `docs/screenshots/`
 - Short video walkthrough for study-case delivery
 
+## Video Walkthrough
+
+A short video walkthrough explaining the test execution and key technical decisions is available here:
+
+[Watch Video Walkthrough](https://drive.google.com/file/d/1ENQaHW5Q3KZMntEM4aZjzPjf2sjvy7Mp/view?usp=sharing)
+
 ## Architecture
 
 The automation uses a simple Page Object Model structure:
